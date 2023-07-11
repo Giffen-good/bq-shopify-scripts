@@ -55,7 +55,7 @@ def set_geolocation_on_orders(client, updates: list):
     """
     query_job = client.query(query)
     query_job.result()
-
+    print('Updating lat and lng for new batch of IDs...')
 
 if __name__ == "__main__":
     client = bigquery.Client()
