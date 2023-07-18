@@ -1,9 +1,11 @@
 import json
 import os
 import csv
+import re
 import requests
 from dotenv import load_dotenv
 import ast
+
 
 load_dotenv()
 
@@ -67,25 +69,18 @@ def fetch_paginated_data(endpoint: str, filename: str, params=None, append_to_ex
         write_to_csv(response.json()[endpoint], filename, field_names)
 
 
-def update_json_string_from_none_to_null(json_string: str) -> str:
+def reformat_json_string(json_string:str) -> str:
+     json_dict = ast.literal_eval(str(json_string))
+     json_string_proper = json.dumps(json_dict)
+     return json_string_proper
+
+# Step 1 of cleaning - remove "None"
+
+def update_json_string_none_to_null(json_string: str) -> str:
     return json_string.replace("None", "null")
 
+def reformat_json_quotes(json_string: str) -> str:
+        pattern = r"(?<![A-Za-z])'(?![A-Za-z])|(?<=[A-Za-z])'(?![A-Za-z])|(?<![A-Za-z])'(?=[A-Za-z])"
+        fixed_str = re.sub(pattern, '"', json_string)
+        return fixed_str
 
-def reformat_json_string(json_string:str) -> str:
-    json_dict = ast.literal_eval(json_string)
-    json_string_proper = json.dumps(json_dict)
-
-    return json_string_proper
-
-
-
-def update_json_string_none_to_none(json_string: str) -> str:
-    return json_string.replace("None", "\"None\"")
-
-
-
-
-#def clean_json_fields_by_column(client, table, column_name):
-    # 1. SELECT column_name and id from all rows in table containing INVALID JSON string
-    # 2. cleanup the JSON string
-    # 3. Write a batch UPDATE using CASE/WHEN to update each row in (1) with the clean JSON in (2)
