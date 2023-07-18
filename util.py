@@ -79,6 +79,7 @@ def reformat_json_string(json_string: str) -> str:
 
     # Replace single quotes with double quotes, but avoid replacing apostrophes within words
     json_string = re.sub(r"(?<=\W)'|'(?=\W)|^'|'$", '"', json_string)
+    json_string = json_string.replace("'", "\\'")
     try:
         # Attempt to load the string as JSON to ensure it's valid
         json_dict = json.loads(json_string)
