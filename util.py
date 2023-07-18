@@ -69,10 +69,27 @@ def fetch_paginated_data(endpoint: str, filename: str, params=None, append_to_ex
         write_to_csv(response.json()[endpoint], filename, field_names)
 
 
-def reformat_json_string(json_string:str) -> str:
-     json_dict = ast.literal_eval(str(json_string))
-     json_string_proper = json.dumps(json_dict)
-     return json_string_proper
+
+
+def reformat_json_string(json_string: str) -> str:
+    # Replace Python None, True, False with JSON null, true, false
+    json_string = json_string.replace('None', 'null')
+    json_string = json_string.replace('True', 'true')
+    json_string = json_string.replace('False', 'false')
+
+    # Replace single quotes with double quotes, but avoid replacing apostrophes within words
+    json_string = re.sub(r"(?<=\W)'|'(?=\W)|^'|'$", '"', json_string)
+    try:
+        # Attempt to load the string as JSON to ensure it's valid
+        json_dict = json.loads(json_string)
+        # Dump the JSON back to a string, this will ensure it has the correct formatting
+        json_string_proper = json.dumps(json_dict)
+        return json_string_proper
+
+    except json.JSONDecodeError:
+        print(f"Couldn't parse the provided string into JSON =>\n\t{json_string}")
+        return None
+
 
 # Step 1 of cleaning - remove "None"
 

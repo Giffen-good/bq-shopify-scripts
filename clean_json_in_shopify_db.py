@@ -7,7 +7,7 @@ import json
 
 
 # Set batch size
-BATCH_SIZE = 2
+BATCH_SIZE = 200
 
 # Set columns for query
 if __name__ == "__main__":
@@ -32,24 +32,19 @@ if __name__ == "__main__":
         for row in batch:
             id = row.id
             shipping_address = row.shipping_address
-            print(shipping_address)
 #            json_double_quotes = reformat_json_quotes(shipping_address)
-#            print(json_double_quotes)
             reformatted_shipping_address = reformat_json_string(shipping_address)
-            print(reformatted_shipping_address)
+            if reformatted_shipping_address is None:
+                continue
             clause_string = f"WHEN id = {id} THEN shipping_address = {reformatted_shipping_address}"
             when_then_clauses.append(clause_string)
             ids.append(id)
-
-        print(when_then_clauses)
-
         update_query = f"""
                     UPDATE `no-maintenance`.shopify.orders
                     SET shipping_address = CASE {" ".join(when_then_clauses)} END
-                    WHERE id IN {",".join(ids)};
+                    WHERE id IN {",".join(str(id) for id in ids)};
                 """
 
-        print(update_query)
 
     # query_job = client.query(update_query)
     # query_job.result()
