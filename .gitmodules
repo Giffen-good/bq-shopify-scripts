@@ -1,0 +1,3 @@
+[submodule "gcp-scheduled-tasks"]
+	path = gcp-scheduled-tasks
+	url = git@github.com:ivamluz/cloud-build-cloud-functions-pipeline.git
